@@ -1,0 +1,28 @@
+# Build output
+build/
+*.o
+*.d
+*.so
+*.a
+
+# Binaries produced by the Makefile
+visualpacker
+visualpacker-debug
+vpdump
+vpdump-debug
+*-test
+*-test-debug
+
+# Sanitizer / profiling output
+*.log
+callgrind.out.*
+perf.data*
+vgcore.*
+
+# Editor and OS noise
+.cache/
+compile_commands.json
+.clangd/
+*.swp
+*~
+.DS_Store
