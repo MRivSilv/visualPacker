@@ -1,28 +1,9 @@
-/* VisualPacker — a window listing every package installed on this machine.
- *
- * This is the humble starting point: read the package database, show it.
- * No dependency tree, no buttons, nothing that can modify your system.
- *
- * Two libraries do the work:
- *   libalpm  the C library pacman itself is built from, so we read the real
- *            database directly instead of running pacman and parsing text
- *   GTK4     the window, in plain C, as a normal desktop app
- */
 #include <alpm.h>
 #include <alpm_list.h>
 #include <gtk/gtk.h>
 
 #define PACMAN_ROOT   "/"
 #define PACMAN_DBPATH "/var/lib/pacman/"
-
-/* ------------------------------------------------------------------ *
- * One row in the list.
- *
- * GTK's list widgets show a list of GObjects, so each package becomes a
- * small object. The size is formatted once, here, rather than every time
- * the row is drawn -- scrolling should not do arithmetic.
- * ------------------------------------------------------------------ */
-
 #define VP_TYPE_PKG (vp_pkg_get_type())
 G_DECLARE_FINAL_TYPE(VpPkg, vp_pkg, VP, PKG, GObject)
 
@@ -62,12 +43,6 @@ static VpPkg *vp_pkg_new(const char *name, const char *version, guint64 bytes)
     return self;
 }
 
-/* ------------------------------------------------------------------ *
- * Reading the package database
- * ------------------------------------------------------------------ */
-
-/* Fills `store` with every installed package. Returns the count, or 0 and
- * sets *error (which the caller must free) if the database cannot be read. */
 static guint load_packages(GListStore *store, char **error)
 {
     alpm_errno_t err = 0;
@@ -101,19 +76,9 @@ static guint load_packages(GListStore *store, char **error)
         count++;
     }
 
-    /* Everything we keep was copied above, so the database can be closed
-     * immediately -- no file handles or caches stay open while you browse. */
     alpm_release(handle);
     return count;
 }
-
-/* ------------------------------------------------------------------ *
- * The list widget
- *
- * GTK recycles a small pool of row widgets as you scroll: `setup` builds a
- * blank one, `bind` points it at whichever package is currently visible.
- * That is why a list of thousands of packages scrolls without allocating.
- * ------------------------------------------------------------------ */
 
 static void setup_label(GtkListItemFactory *factory, GtkListItem *item,
                         gpointer user_data)
@@ -169,10 +134,6 @@ static void add_column(GtkColumnView *view, const char *title,
     g_object_unref(column);
 }
 
-/* ------------------------------------------------------------------ *
- * The window
- * ------------------------------------------------------------------ */
-
 static GtkWidget *message_page(const char *title, const char *detail)
 {
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
@@ -213,8 +174,6 @@ static void activate(GtkApplication *app, gpointer user_data)
         return;
     }
 
-    /* No selection model behaviour is needed yet, but GtkColumnView requires
-     * one; NoSelection simply means rows are not selectable for now. */
     GtkNoSelection *selection = gtk_no_selection_new(G_LIST_MODEL(store));
     GtkWidget *view = gtk_column_view_new(GTK_SELECTION_MODEL(selection));
     gtk_column_view_set_show_row_separators(GTK_COLUMN_VIEW(view), TRUE);
