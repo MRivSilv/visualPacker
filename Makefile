@@ -10,7 +10,8 @@
 CC     ?= gcc
 PREFIX ?= /usr/local
 
-SRC := src/main.c
+SRC := src/main.c src/gui.c src/packages.c
+HDR := $(wildcard src/*.h)
 
 PKGS       := gtk4 libalpm
 PKG_CFLAGS := $(shell pkg-config --cflags $(PKGS))
@@ -40,10 +41,10 @@ DBG_CFLAGS := -Og -g3 -Werror -fno-omit-frame-pointer \
 
 all: visualpacker
 
-visualpacker: $(SRC)
+visualpacker: $(SRC) $(HDR)
 	$(CC) $(BASE) $(REL_CFLAGS) $(PKG_CFLAGS) $(SRC) -o $@ $(PKG_LIBS) $(REL_LDFLAGS)
 
-visualpacker-debug: $(SRC)
+visualpacker-debug: $(SRC) $(HDR)
 	$(CC) $(BASE) $(DBG_CFLAGS) $(PKG_CFLAGS) $(SRC) -o $@ $(PKG_LIBS)
 
 run: visualpacker
